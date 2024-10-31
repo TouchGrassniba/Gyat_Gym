@@ -3,82 +3,53 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
-use Illuminate\Contracts\Support\ValidatedData;
 use Illuminate\Http\Request;
 
 class MemberController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Get all members
     public function index()
     {
         $members = Member::all();
-        return response()->json([
-            'code'=>200,
-            'message'=>'Success',
-            'data'=>$members
-        ]);
+        return response()->json(['data' => $members], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Store a new member
     public function store(Request $request)
     {
-        $validatedData= $request->validate([
-            'nickname'=>'required|string|max:255',
-            'fullname'=>'required|string|max:255',
-            'email'=>'required|string|unique:members,email',
-            'start_date'=>'required|date',
-            'end_date'=>'required|date|after_or_equal:start_date'
+        $request->validate([
+            'nickname' => 'required|string|max:255',
+            'fullname' => 'required|string|max:255',
+            'email' => 'required|email',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
         ]);
-        $member = Member::create($validatedData);
-        return response()->json([
-            'code'=>201,
-            'message'=>'member created successfully',
-            'data'=>$member
 
+        $member = Member::create($request->all());
+        return response()->json(['message' => 'Member added successfully!', 'member' => $member], 201);
+    }
+
+    // Update an existing member
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nickname' => 'required|string|max:255',
+            'fullname' => 'required|string|max:255',
+            'email' => 'required|email',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
         ]);
+
+        $member = Member::findOrFail($id);
+        $member->update($request->all());
+        return response()->json(['message' => 'Member updated successfully!', 'member' => $member], 200);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Member $member)
+    // Delete a member
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Member $member)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Member $member)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Member $member)
-    {
-        //
+        $member = Member::findOrFail($id);
+        $member->delete();
+        return response()->json(['message' => 'Member deleted successfully!'], 200);
     }
 }
