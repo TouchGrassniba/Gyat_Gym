@@ -1,70 +1,150 @@
-# Getting Started with Create React App
+import React, { useEffect, useState } from 'react';
+import { Card, Button, Form, Alert, Container, ListGroup } from 'react-bootstrap';
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+const GymMember = () => {
+  const [nickname, setNickname] = useState('');
+  const [fullname, setFullname] = useState('');
+  const [email, setEmail] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [members, setMembers] = useState([]);
+  const [message, setMessage] = useState('');
 
-## Available Scripts
+  // Fetch members from API
+  const fetchMembers = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/member');
+      const data = await response.json();
+      if (response.ok) {
+        setMembers(data.data); // Set the members state
+      } else {
+        console.error(data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching members:', error);
+    }
+  };
 
-In the project directory, you can run:
+  // Call fetchMembers on component mount
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
-### `npm start`
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+    const newMember = { nickname, fullname, email, start_date: startDate, end_date: endDate };
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+    try {
+      const response = await fetch('http://localhost:8000/api/member', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newMember),
+      });
 
-### `npm test`
+      const data = await response.json();
+      if (response.ok) {
+        setMessage(data.message); // Set success message
+        fetchMembers(); // Refresh the member list
+        // Reset form fields
+        setNickname('');
+        setFullname('');
+        setEmail('');
+        setStartDate('');
+        setEndDate('');
+      } else {
+        setMessage(data.message); // Set error message
+      }
+    } catch (error) {
+      console.error('Error adding member:', error);
+      setMessage('Failed to add member.');
+    }
+  };
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+  return (
+    <Container className="mt-5">
+      <Card>
+        <Card.Body>
+          <h2 className="text-center">Add Gym Member</h2>
+          {message && <Alert variant="info">{message}</Alert>}
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formNickname">
+              <Form.Label>Nickname</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter nickname"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-### `npm run build`
+            <Form.Group controlId="formFullname">
+              <Form.Label>Full Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter full name"
+                value={fullname}
+                onChange={(e) => setFullname(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+            <Form.Group controlId="formEmail">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+            <Form.Group controlId="formStartDate">
+              <Form.Label>Start Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+            <Form.Group controlId="formEndDate">
+              <Form.Label>End Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-### `npm run eject`
+            <Button variant="primary" type="submit">
+              Submit
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+      <Card className="mt-4">
+        <Card.Body>
+          <h2 className="text-center">Gym Members List</h2>
+          <ListGroup>
+            {members.map((member) => (
+              <ListGroup.Item key={member.id}>
+                {member.nickname} - {member.fullname} - {member.email} (Start: {member.start_date}, End: {member.end_date})
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Card.Body>
+      </Card>
+    </Container>
+  );
+};
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+export default GymMember;
