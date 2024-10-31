@@ -37,7 +37,7 @@ const GymMember = () => {
     const newMember = { nickname, fullname, email, start_date: startDate, end_date: endDate };
 
     try {
-      const response = await fetch('http://localhost:8000/api/members', {
+      const response = await fetch('http://localhost:8000/api/member', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
