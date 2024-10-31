@@ -9,5 +9,10 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::get('/member',[MemberController::class,'index']);
-Route::post('/member',[MemberController::class,'store']);
+
+
+Route::get('/member', [MemberController::class, 'index']);
+Route::post('/member', [MemberController::class, 'store']);
+Route::put('/member/{id}', [MemberController::class, 'update']);
+Route::delete('/member/{id}', [MemberController::class, 'destroy']);
+
