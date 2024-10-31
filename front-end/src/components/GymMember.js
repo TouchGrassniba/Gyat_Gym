@@ -1,20 +1,35 @@
-// GymMember.js
-import React, { useState } from 'react';
-import AddGym from './AddGym';
-import GymList from './GymList';
+import React, { useEffect, useState } from 'react';
+import { Container } from 'react-bootstrap';
+import AddGym from './AddMember';
+import GymList from './MemberList';
 
 const GymMember = () => {
+  const [members, setMembers] = useState([]);
   const [memberToEdit, setMemberToEdit] = useState(null);
 
-  const fetchMembers = () => {
-    // This function can be used to trigger a refetch if needed
+  const fetchMembers = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/member');
+      const data = await response.json();
+      if (response.ok) {
+        setMembers(data.data);
+      } else {
+        console.error(data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching members:', error);
+    }
   };
 
+  useEffect(() => {
+    fetchMembers();
+  }, []);
+
   return (
-    <div style={{ maxWidth: '600px', margin: 'auto', padding: '20px' }}>
+    <Container className="mt-5">
       <AddGym fetchMembers={fetchMembers} memberToEdit={memberToEdit} setMemberToEdit={setMemberToEdit} />
-      <GymList setMemberToEdit={setMemberToEdit} />
-    </div>
+      <GymList members={members} fetchMembers={fetchMembers} setMemberToEdit={setMemberToEdit} />
+    </Container>
   );
 };
 

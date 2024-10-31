@@ -1,65 +1,43 @@
-// GymList.js
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { Card, ListGroup, Button } from 'react-bootstrap';
 
-const GymList = ({ setMemberToEdit }) => {
-  const [members, setMembers] = useState([]);
-  const [message, setMessage] = useState('');
-
-  // Fetch members from API
-  const fetchMembers = async () => {
+const GymList = ({ members, fetchMembers, setMemberToEdit }) => {
+  const handleDelete = async (id) => {
     try {
-      const response = await fetch('http://localhost:8000/api/member');
+      const response = await fetch(`http://localhost:8000/api/member/${id}`, {
+        method: 'DELETE',
+      });
       const data = await response.json();
       if (response.ok) {
-        setMembers(data.data); // Set the members state
+        fetchMembers();
       } else {
         console.error(data.message);
       }
     } catch (error) {
-      console.error('Error fetching members:', error);
-    }
-  };
-
-  // Call fetchMembers on component mount
-  useEffect(() => {
-    fetchMembers();
-  }, []);
-
-  // Delete member
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this member?')) {
-      try {
-        const response = await fetch(`http://localhost:8000/api/member/${id}`, {
-          method: 'DELETE',
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          setMessage(data.message); // Set success message
-          fetchMembers(); // Refresh the member list
-        } else {
-          setMessage(data.message); // Set error message
-        }
-      } catch (error) {
-        console.error('Error deleting member:', error);
-        setMessage('Failed to delete member.');
-      }
+      console.error('Error deleting member:', error);
     }
   };
 
   return (
-    <div>
-      <h2>Gym Members List</h2>
-      {message && <div style={{ color: 'blue' }}>{message}</div>}
-      <ul>
-        {members.map((member) => (
-          <li key={member.id}>
-            {member.nickname} - {member.fullname} - {member.email} (Start: {member.start_date}, End: {member.end_date})
-            <button onClick={() => setMemberToEdit(member)}>Edit</button>
-            <button onClick={() => handleDelete(member.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+    <div className="card mt-4">
+      <div className="card-body">
+        <h2 className="text-center">Gym Members List</h2>
+        <ListGroup>
+          {members.map((member) => (
+            <ListGroup.Item key={member.id}>
+              <div>
+                <strong>{member.nickname}</strong> - {member.fullname} - {member.email} (Start: {member.start_date}, End: {member.end_date})
+                <Button variant="warning" onClick={() => setMemberToEdit(member)} className="ml-2">
+                  Edit
+                </Button>
+                <Button variant="danger" onClick={() => handleDelete(member.id)} className="ml-2">
+                  Delete
+                </Button>
+              </div>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      </div>
     </div>
   );
 };

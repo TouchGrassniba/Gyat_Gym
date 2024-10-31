@@ -1,5 +1,5 @@
-// AddGym.js
 import React, { useState, useEffect } from 'react';
+import { Button, Alert } from 'react-bootstrap';
 
 const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
   const [nickname, setNickname] = useState('');
@@ -17,7 +17,6 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
       setStartDate(memberToEdit.start_date);
       setEndDate(memberToEdit.end_date);
     } else {
-      // Reset fields if no member is being edited
       setNickname('');
       setFullname('');
       setEmail('');
@@ -26,18 +25,16 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
     }
   }, [memberToEdit]);
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const newMember = { nickname, fullname, email, start_date: startDate, end_date: endDate };
 
     try {
       const method = memberToEdit ? 'PUT' : 'POST';
       const url = memberToEdit ? `http://localhost:8000/api/member/${memberToEdit.id}` : 'http://localhost:8000/api/member';
-
+      
       const response = await fetch(url, {
-        method: method,
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -46,12 +43,11 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
 
       const data = await response.json();
       if (response.ok) {
-        setMessage(data.message); // Set success message
-        fetchMembers(); // Refresh the member list
-        // Reset form fields
-        setMemberToEdit(null); // Clear the edit member state
+        setMessage(data.message);
+        fetchMembers();
+        setMemberToEdit(null); // Clear member to edit
       } else {
-        setMessage(data.message); // Set error message
+        setMessage(data.message);
       }
     } catch (error) {
       console.error('Error adding/updating member:', error);
@@ -60,62 +56,74 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
   };
 
   return (
-    <div>
-      <h1>{memberToEdit ? 'Edit Gym Member' : 'Add Gym Member'}</h1>
-      {message && <div style={{ color: 'blue' }}>{message}</div>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Nickname:</label>
-          <input
-            type="text"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            required
-          />
-        </div>
+    <div className="card">
+      <div className="card-body">
+        <h2 className="text-center">{memberToEdit ? 'Edit Gym Member' : 'Add Gym Member'}</h2>
+        {message && <Alert variant="info">{message}</Alert>}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="formNickname">Nickname</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter nickname"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              required
+            />
+          </div>
 
-        <div>
-          <label>Full Name:</label>
-          <input
-            type="text"
-            value={fullname}
-            onChange={(e) => setFullname(e.target.value)}
-            required
-          />
-        </div>
+          <div className="form-group">
+            <label htmlFor="formFullname">Full Name</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter full name"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
+              required
+            />
+          </div>
 
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+          <div className="form-group">
+            <label htmlFor="formEmail">Email</label>
+            <input
+              type="email"
+              className="form-control"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <div>
-          <label>Start Date:</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            required
-          />
-        </div>
+          <div className="form-group">
+            <label htmlFor="formStartDate">Start Date</label>
+            <input
+              type="date"
+              className="form-control"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
+            />
+          </div>
 
-        <div>
-          <label>End Date:</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            required
-          />
-        </div>
+          <div className="form-group">
+            <label htmlFor="formEndDate">End Date</label>
+            <input
+              type="date"
+              className="form-control"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              required
+            />
+          </div>
 
-        <button type="submit">{memberToEdit ? 'Update' : 'Submit'}</button>
-      </form>
+          <Button variant="primary" type="submit">
+            {memberToEdit ? 'Update' : 'Submit'}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 };
