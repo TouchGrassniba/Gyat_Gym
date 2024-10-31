@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+<!-- import React, { useEffect, useState } from 'react';
 import { Card, Button, Form, Alert, Container, ListGroup } from 'react-bootstrap';
 
 const GymMember = () => {
@@ -10,7 +10,7 @@ const GymMember = () => {
   const [members, setMembers] = useState([]);
   const [message, setMessage] = useState('');
 
-  // Fetch members from API
+
   const fetchMembers = async () => {
     try {
       const response = await fetch('http://localhost:8000/api/member');
@@ -25,12 +25,12 @@ const GymMember = () => {
     }
   };
 
-  // Call fetchMembers on component mount
+
   useEffect(() => {
     fetchMembers();
   }, []);
 
-  // Handle form submission
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -147,4 +147,4 @@ const GymMember = () => {
   );
 };
 
-export default GymMember;
+export default GymMember; -->
