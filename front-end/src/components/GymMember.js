@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Container } from 'react-bootstrap';
+import { Button, Container, } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import AddGym from './AddMember';
-import GymList from './MemberList';
 
 const GymMember = () => {
   const [members, setMembers] = useState([]);
   const [memberToEdit, setMemberToEdit] = useState(null);
+  const navigate = useNavigate();
 
   const fetchMembers = async () => {
     try {
@@ -27,8 +28,13 @@ const GymMember = () => {
 
   return (
     <Container className="mt-5">
+   {console.log(members)}
       <AddGym fetchMembers={fetchMembers} memberToEdit={memberToEdit} setMemberToEdit={setMemberToEdit} />
-      <GymList members={members} fetchMembers={fetchMembers} setMemberToEdit={setMemberToEdit} />
+      <Button variant="primary" className="mt-3" onClick={() => navigate('/memberlist')}>
+        View Member List
+      </Button>
+      
+      
     </Container>
   );
 };
