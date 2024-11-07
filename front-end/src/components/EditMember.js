@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 const EditMember = ({ memberToEdit, setMemberToEdit, fetchMembers }) => {
   const [nickname, setNickname] = useState('');
   const [fullname, setFullname] = useState('');
@@ -47,56 +48,66 @@ const EditMember = ({ memberToEdit, setMemberToEdit, fetchMembers }) => {
   };
 
   return (
-    
-    <form onSubmit={handleEditSubmit}>
-      <div>
-        
-        <label>Nickname:</label>
-        <input
-          type="text"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          required
-        />
+    <div className="card" style={styles.card}>
+      <div className="card-body">
+        <h2 className="text-center" style={styles.title}>Edit Member</h2>
+        <form onSubmit={handleEditSubmit}>
+          <div className="form-group">
+            <label htmlFor="formNickname" style={styles.label}>Nickname</label>
+            <input
+              type="text"
+              className="form-control"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="formFullname" style={styles.label}>Full Name</label>
+            <input
+              type="text"
+              className="form-control"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="formEmail" style={styles.label}>Email</label>
+            <input
+              type="email"
+              className="form-control"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="formStartDate" style={styles.label}>Start Date</label>
+            <input
+              type="date"
+              className="form-control"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="formEndDate" style={styles.label}>End Date</label>
+            <input
+              type="date"
+              className="form-control"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-danger" style={styles.button}>
+            Update Member
+          </button>
+        </form>
       </div>
-      <div>
-        <label>Full Name:</label>
-        <input
-          type="text"
-          value={fullname}
-          onChange={(e) => setFullname(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Email:</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Start Date:</label>
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>End Date:</label>
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          required
-        />
-      </div>
-      <button type="submit">Update Member</button>
-    </form>
+    </div>
   );
 };
 

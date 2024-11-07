@@ -9,6 +9,7 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
   const [endDate, setEndDate] = useState('');
   const [message, setMessage] = useState('');
 
+  // Set form fields when member is selected for editing
   useEffect(() => {
     if (memberToEdit) {
       setNickname(memberToEdit.nickname);
@@ -25,6 +26,7 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
     }
   }, [memberToEdit]);
 
+  // Submit the form (add or update member)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newMember = { nickname, fullname, email, start_date: startDate, end_date: endDate };
@@ -56,13 +58,15 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
   };
 
   return (
-    <div className="card">
+    <div className="card mt-5" style={styles.card}>
       <div className="card-body">
-        <h2 className="text-center">{memberToEdit ? 'Edit Gym Member' : 'Add Gym Member'}</h2>
+        <h2 className="text-center" style={styles.title}>
+          {memberToEdit ? 'Edit Gym Member' : 'Add Gym Member'}
+        </h2>
         {message && <Alert variant="info">{message}</Alert>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="formNickname">Nickname</label>
+            <label htmlFor="formNickname" style={styles.label}>Nickname</label>
             <input
               type="text"
               className="form-control"
@@ -74,7 +78,7 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="formFullname">Full Name</label>
+            <label htmlFor="formFullname" style={styles.label}>Full Name</label>
             <input
               type="text"
               className="form-control"
@@ -86,7 +90,7 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="formEmail">Email</label>
+            <label htmlFor="formEmail" style={styles.label}>Email</label>
             <input
               type="email"
               className="form-control"
@@ -98,7 +102,7 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="formStartDate">Start Date</label>
+            <label htmlFor="formStartDate" style={styles.label}>Start Date</label>
             <input
               type="date"
               className="form-control"
@@ -109,7 +113,7 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="formEndDate">End Date</label>
+            <label htmlFor="formEndDate" style={styles.label}>End Date</label>
             <input
               type="date"
               className="form-control"
@@ -119,13 +123,37 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
             />
           </div>
 
-          <Button variant="primary" type="submit">
+          <Button variant="danger" type="submit" style={styles.button}>
             {memberToEdit ? 'Update' : 'Submit'}
           </Button>
         </form>
       </div>
     </div>
   );
+};
+
+const styles = {
+  card: {
+    backgroundColor: '#1c1c28',
+    border: 'none',
+    borderRadius: '10px',
+    boxShadow: '0 0 10px rgba(52, 152, 219, 0.4)',
+    padding: '20px',
+  },
+  title: {
+    color: '#3498db',
+    textShadow: '0 0 5px rgba(52, 152, 219, 0.6)',
+  },
+  label: {
+    color: '#95a5a6',
+  },
+  button: {
+    backgroundColor: '#e74c3c',
+    borderColor: '#e74c3c',
+    boxShadow: '0 0 10px rgba(231, 76, 60, 0.8)',
+    transition: 'all 0.3s ease',
+    marginTop: '10px',
+  },
 };
 
 export default AddGym;

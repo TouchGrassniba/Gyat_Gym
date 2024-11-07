@@ -43,6 +43,7 @@ Route::post('/aichat', function (Request $request) {
             ])->post('https://api.ai21.com/studio/v1/chat/completions', [
                 'model' => 'jamba-1.5-large',
                 'messages' => [
+                    ['role' => 'system', 'content' => 'Your name is Jimmy and you are a knowledgeable fitness coach who provides expert advice on diet, fitness, and wellness programs. Answer questions in a supportive and encouraging way, tailored to users\' fitness goals.'],
                     ['role' => 'user', 'content' => $message]
                 ],
                 'n' => 1,

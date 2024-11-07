@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Container, ListGroup, Spinner } from 'react-bootstrap';
+import { Button, Form, Container, ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -7,19 +7,28 @@ const AiChat = () => {
     const [message, setMessage] = useState('');
     const [responses, setResponses] = useState([]);
     const [isTyping, setIsTyping] = useState(false);
+    const [typingMessage, setTypingMessage] = useState(''); // Temporary typing message
+    const [typingInterval, setTypingInterval] = useState(null); // To store the typing interval ID
 
-    const typeEffect = (text, callback) => {
+    const typeEffect = (text) => {
         let index = 0;
-        let newText = '';
+        setTypingMessage(''); // Ensure typingMessage is cleared at the start
+
         const intervalId = setInterval(() => {
-            if (index < text.length) {
-                newText += text[index];
-                callback(newText);
-                index++;
-            } else {
+            setTypingMessage((prev) => prev + text[index]);
+            index++;
+            if (index >= text.length) {
                 clearInterval(intervalId);
+                setResponses((prevResponses) => [
+                    ...prevResponses,
+                    { role: 'ai', content: text }
+                ]);
+                setTypingMessage('');
+                setIsTyping(false);
             }
-        }, 20);
+        }, 5);
+
+        setTypingInterval(intervalId); // Save the interval ID for later stopping
     };
 
     const handleSendMessage = async () => {
@@ -31,26 +40,26 @@ const AiChat = () => {
         ]);
         setMessage('');
         setIsTyping(true);
+        setTypingMessage('');
 
         try {
             const res = await axios.post('http://localhost:8000/api/aichat', { message });
             const aiReply = res.data.reply || "I'm sorry, I didn't get that.";
-
-            typeEffect(aiReply, (newText) => {
-                setResponses((prevResponses) => [
-                    ...prevResponses.slice(0, prevResponses.length - 1),
-                    { role: 'ai', content: newText },
-                ]);
-            });
+            typeEffect(aiReply);
         } catch (error) {
             console.error('Error communicating with AI:', error);
             setResponses((prevResponses) => [
                 ...prevResponses,
                 { role: 'ai', content: "There was an error processing your request." },
             ]);
-        } finally {
             setIsTyping(false);
         }
+    };
+
+    const stopTyping = () => {
+        clearInterval(typingInterval); // Stop the typing effect
+        setIsTyping(false); // Set typing to false to remove the "Jimmy is typing..." message
+        setTypingMessage(''); // Clear any remaining typing message
     };
 
     const handleKeyPress = (e) => {
@@ -63,7 +72,7 @@ const AiChat = () => {
     return (
         <Container fluid style={styles.container}>
             <div style={styles.header}>
-                <h2 style={styles.title}>AI Gym Coach</h2>
+                <h2 style={styles.title}>Coach Jimmy</h2>
                 <Link to="/">
                     <Button variant="outline-light" style={styles.backButton}>Back to Home</Button>
                 </Link>
@@ -72,17 +81,17 @@ const AiChat = () => {
                 <ListGroup>
                     {responses.map((response, index) => (
                         <ListGroup.Item key={index} style={response.role === 'user' ? styles.userMessage : styles.aiMessage}>
-                            <strong>{response.role === 'user' ? 'You: ' : 'AI Coach: '}</strong>
+                            <strong>{response.role === 'user' ? 'You: ' : 'Jimmy: '}</strong>
                             {response.content}
                         </ListGroup.Item>
                     ))}
+                    {isTyping && (
+                        <ListGroup.Item style={styles.aiMessage}>
+                            <strong>Jimmy: </strong>
+                            {typingMessage || 'Jimmy is typing...'}
+                        </ListGroup.Item>
+                    )}
                 </ListGroup>
-                {isTyping && (
-                    <div style={styles.typingContainer}>
-                        <Spinner animation="grow" variant="light" size="sm" style={styles.spinner} />
-                        <span style={styles.typingText}>AI Coach is typing...</span>
-                    </div>
-                )}
             </div>
             <Form style={styles.form} className="d-flex mt-3">
                 <Form.Control
@@ -93,12 +102,19 @@ const AiChat = () => {
                     placeholder="Ask your fitness question..."
                     style={styles.input}
                 />
-                <Button variant="primary" onClick={handleSendMessage} style={styles.sendButton}>Send</Button>
+                <Button 
+                    variant="primary" 
+                    onClick={isTyping ? stopTyping : handleSendMessage} 
+                    style={styles.sendButton}
+                >
+                    {isTyping ? 'Stop' : 'Send'}
+                </Button>
             </Form>
         </Container>
     );
 };
 
+// Styles
 const styles = {
     container: {
         backgroundColor: '#0d0d1f', 

@@ -82,19 +82,22 @@ const MemberList = () => {
   }, []);
 
   return (
-    <div className="card mt-4">
-      <div className="card-body">
-        <h2 className="text-center">Gym Members List</h2>
-        <ListGroup>
-          {members.length > 0 ? (
-            members.map((member) => (
-              <ListGroup.Item key={member.id}>
-                <div>
-                  <strong>{member.nickname}</strong> - {member.fullname} - {member.email}
+    <div className="container-fluid" style={styles.container}>
+      
+
+      <h2 className="text-center mb-4" style={styles.title}>Gym Members List</h2>
+      <ListGroup>
+        {members.length > 0 ? (
+          members.map((member) => (
+            <ListGroup.Item key={member.id} style={styles.listGroupItem}>
+              <div>
+                <strong style={styles.memberName}>{member.nickname}</strong> - {member.fullname} - {member.email}
+                <div style={{ marginTop: '10px' }}> {/* Added gap between the text and buttons */}
                   <Button
                     variant="warning"
                     className="ml-2"
                     onClick={() => handleEditClick(member)}
+                    style={styles.button}
                   >
                     Edit
                   </Button>
@@ -102,17 +105,18 @@ const MemberList = () => {
                     variant="danger"
                     className="ml-2"
                     onClick={() => handleDelete(member.id)}
+                    style={{ ...styles.button, marginLeft: '10px' }}  // Added gap between Edit and Delete buttons
                   >
                     Delete
                   </Button>
                 </div>
-              </ListGroup.Item>
-            ))
-          ) : (
-            <p className="text-center">No members found.</p>
-          )}
-        </ListGroup>
-      </div>
+              </div>
+            </ListGroup.Item>
+          ))
+        ) : (
+          <p className="text-center" style={styles.noMembers}>No members found.</p>
+        )}
+      </ListGroup>
 
       {/* Modal for Edit Form */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
@@ -128,6 +132,7 @@ const MemberList = () => {
                 name="nickname"
                 value={editForm.nickname}
                 onChange={handleEditChange}
+                style={styles.formControl}
               />
             </Form.Group>
             <Form.Group controlId="formFullname">
@@ -137,6 +142,7 @@ const MemberList = () => {
                 name="fullname"
                 value={editForm.fullname}
                 onChange={handleEditChange}
+                style={styles.formControl}
               />
             </Form.Group>
             <Form.Group controlId="formEmail">
@@ -146,6 +152,7 @@ const MemberList = () => {
                 name="email"
                 value={editForm.email}
                 onChange={handleEditChange}
+                style={styles.formControl}
               />
             </Form.Group>
             <Form.Group controlId="formStartDate">
@@ -155,6 +162,7 @@ const MemberList = () => {
                 name="start_date"
                 value={editForm.start_date}
                 onChange={handleEditChange}
+                style={styles.formControl}
               />
             </Form.Group>
             <Form.Group controlId="formEndDate">
@@ -164,21 +172,64 @@ const MemberList = () => {
                 name="end_date"
                 value={editForm.end_date}
                 onChange={handleEditChange}
+                style={styles.formControl}
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)} style={styles.button}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleEditSubmit}>
+          <Button variant="primary" onClick={handleEditSubmit} style={styles.button}>
             Save Changes
           </Button>
         </Modal.Footer>
       </Modal>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    backgroundColor: '#1c1c28', // Dark background matching the card color
+    color: 'white',
+    minHeight: '100vh',  // Full screen
+    fontFamily: 'Roboto, sans-serif',
+    paddingBottom: '30px', // Prevents content from being cut off at the bottom
+    paddingTop: '20px', // Adds top padding for spacing
+  },
+  title: {
+    color: '#3498db',
+    textShadow: '0 0 5px rgba(52, 152, 219, 0.6)',
+  },
+  listGroupItem: {
+    backgroundColor: '#2c3e50',
+    border: 'none',
+    color: '#95a5a6',
+    boxShadow: '0 0 10px rgba(52, 152, 219, 0.4)',
+    borderRadius: '5px',
+    marginBottom: '10px',
+  },
+  memberName: {
+    color: '#e74c3c',
+  },
+  button: {
+    backgroundColor: '#e74c3c',
+    borderColor: '#e74c3c',
+    boxShadow: '0 0 10px rgba(231, 76, 60, 0.8)',
+    transition: 'all 0.3s ease',
+    marginTop: '10px',
+  },
+  formControl: {
+    backgroundColor: '#2c3e50',
+    border: 'none',
+    color: '#fff',
+  },
+  noMembers: {
+    color: '#95a5a6',
+    textAlign: 'center',
+  }
 };
 
 export default MemberList;
