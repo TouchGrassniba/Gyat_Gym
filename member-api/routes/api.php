@@ -17,52 +17,56 @@ Route::post('/member', [MemberController::class, 'store']);
 Route::put('/member/{id}', [MemberController::class, 'update']);
 Route::delete('/member/{id}', [MemberController::class, 'destroy']);
 
-// AI Chat Route
+// AI Chat Route using ChatGPT (OpenAI API)
+// AI Chat Route (Hugging Face API)
 Route::post('/aichat', function (Request $request) {
     $message = $request->input('message');
+    $apiKey = env('AI21_API_KEY'); // Use AI21 API Key from .env
 
-    // Check if the message is empty
     if (empty($message)) {
         return response()->json(['error' => 'Message is required'], 400);
     }
 
-    // Get Hugging Face API key from the .env file
-    $apiKey = env('HUGGINGFACE_API_KEY');
     if (!$apiKey) {
-        return response()->json(['error' => 'Hugging Face API key is missing'], 500);
+        return response()->json(['error' => 'AI21 API key is missing'], 500);
     }
 
-    // Define the system message for the AI (to behave as a coach)
-    $systemMessage = 'You are a knowledgeable fitness coach who provides expert, friendly advice on exercise, nutrition, and health. Keep responses concise and educational.';
+    $attempts = 0;
+    $maxAttempts = 3;
+    $waitTime = 5; // seconds
 
-    try {
-        // Hugging Face Inference API request
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $apiKey,
-            'Content-Type' => 'application/json',
-        ])->post('https://api-inference.huggingface.co/models/gpt2', [
-            'inputs' => $message,
-            'parameters' => [
-                'max_length' => 150, // Control response length
-                'temperature' => 0.7,
-                'stop_sequence' => '\n', // Add stop sequence to prevent long responses
-            ]
-        ]);
-
-        // If successful, return the model's reply
-        if ($response->successful()) {
-            // Add the system message context to make the response more aligned with a fitness coach
-            return response()->json([
-                'reply' => 'AI Coach: ' . $response->json()[0]['generated_text']
+    while ($attempts < $maxAttempts) {
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type' => 'application/json',
+            ])->post('https://api.ai21.com/studio/v1/chat/completions', [
+                'model' => 'jamba-1.5-large',
+                'messages' => [
+                    ['role' => 'user', 'content' => $message]
+                ],
+                'n' => 1,
+                'max_tokens' => 2048,
+                'temperature' => 0.4,
+                'top_p' => 1,
+                'response_format' => ['type' => 'text']
             ]);
-        } else {
-            // Log the error response from Hugging Face
-            Log::error('Failed to get response from Hugging Face', ['response' => $response->body()]);
-            return response()->json(['error' => 'Failed to get response from Hugging Face'], 500);
+
+            if ($response->successful()) {
+                $reply = $response->json()['choices'][0]['message']['content'] ?? 'No response generated';
+                return response()->json(['reply' => $reply]);
+            } elseif ($response->status() === 503) { // 503 for service unavailable/loading
+                sleep($waitTime); // wait before retrying
+                $attempts++;
+            } else {
+                Log::error('Failed response from AI21 API', ['response' => $response->body()]);
+                return response()->json(['error' => 'Failed to get response from AI21 API'], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('API request error', ['exception' => $e->getMessage()]);
+            return response()->json(['error' => 'An unexpected error occurred.'], 500);
         }
-    } catch (\Exception $e) {
-        // Catch other exceptions and return a generic error
-        Log::error('Error during Hugging Face request', ['error' => $e->getMessage()]);
-        return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
     }
+
+    return response()->json(['error' => 'The model is taking too long to load. Please try again later.'], 500);
 });
