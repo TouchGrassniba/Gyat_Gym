@@ -1,7 +1,7 @@
 import React from 'react';
-import { Card, Row, Col, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';  // To handle routing
-import exercises from '../data/exercises'; // Default import
+import { Card, Row, Col,  } from 'react-bootstrap';
+
+import exercises from '../data/exercises'; 
 
 function Home() {
     return (

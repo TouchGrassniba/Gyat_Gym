@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { ListGroup, Button, Modal, Form } from 'react-bootstrap';
+import { ListGroup, Button, Modal, Form, Toast } from 'react-bootstrap';
 
 const MemberList = () => {
   const [members, setMembers] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState(null);
+  const [memberToDelete, setMemberToDelete] = useState(null);
   const [editForm, setEditForm] = useState({
     nickname: '',
     fullname: '',
     email: '',
-    start_date: '',
-    end_date: ''
+    paket: '',
   });
+  const [toastMessage, setToastMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
 
   const fetchMembers = async () => {
     try {
@@ -27,26 +30,41 @@ const MemberList = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
+    if (!memberToDelete) return;
+
     try {
-      const response = await fetch(`http://localhost:8000/api/member/${id}`, {
-        method: 'DELETE'
+      const response = await fetch(`http://localhost:8000/api/member/${memberToDelete.id}`, {
+        method: 'DELETE',
       });
       const data = await response.json();
       if (response.ok) {
         fetchMembers();
-        alert(data.message);
+        setToastMessage(data.message);
+        setShowToast(true);
       } else {
         console.error(data.message);
       }
     } catch (error) {
       console.error('Error deleting member:', error);
+    } finally {
+      setShowDeleteModal(false);
     }
+  };
+
+  const handleDeleteClick = (member) => {
+    setMemberToDelete(member);
+    setShowDeleteModal(true);
   };
 
   const handleEditClick = (member) => {
     setMemberToEdit(member);
-    setEditForm(member);
+    setEditForm({
+      nickname: member.nickname,
+      fullname: member.fullname,
+      email: member.email,
+      paket: member.paket,
+    });
     setShowEditModal(true);
   };
 
@@ -55,19 +73,37 @@ const MemberList = () => {
     setEditForm({ ...editForm, [name]: value });
   };
 
+  const calculateEndDate = (paketChoice) => {
+    const currentDate = new Date();
+    if (paketChoice === '2 Months Package') {
+      currentDate.setMonth(currentDate.getMonth() + 2);
+    } else if (paketChoice === '1 Month Package') {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+    }
+    return currentDate.toISOString().split('T')[0];
+  };
+
   const handleEditSubmit = async () => {
+    const startDate = new Date().toISOString().split('T')[0];
+    const endDate = calculateEndDate(editForm.paket);
+
     try {
       const response = await fetch(`http://localhost:8000/api/member/${memberToEdit.id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(editForm)
+        body: JSON.stringify({
+          ...editForm,
+          start_date: startDate,
+          end_date: endDate,
+        }),
       });
       const data = await response.json();
       if (response.ok) {
         fetchMembers();
-        alert(data.message);
+        setToastMessage(data.message);
+        setShowToast(true);
         setShowEditModal(false);
       } else {
         console.error(data.message);
@@ -83,19 +119,16 @@ const MemberList = () => {
 
   return (
     <div className="container-fluid" style={styles.container}>
-      
-
       <h2 className="text-center mb-4" style={styles.title}>Gym Members List</h2>
       <ListGroup>
         {members.length > 0 ? (
           members.map((member) => (
             <ListGroup.Item key={member.id} style={styles.listGroupItem}>
               <div>
-                <strong style={styles.memberName}>{member.nickname}</strong> - {member.fullname} - {member.email}
-                <div style={{ marginTop: '10px' }}> {/* Added gap between the text and buttons */}
+                <strong style={styles.memberName}>{member.nickname}</strong> - {member.fullname} - {member.start_date} - {member.end_date} - {member.email}
+                <div style={{ marginTop: '10px' }}>
                   <Button
                     variant="warning"
-                    className="ml-2"
                     onClick={() => handleEditClick(member)}
                     style={styles.button}
                   >
@@ -103,9 +136,8 @@ const MemberList = () => {
                   </Button>
                   <Button
                     variant="danger"
-                    className="ml-2"
-                    onClick={() => handleDelete(member.id)}
-                    style={{ ...styles.button, marginLeft: '10px' }}  // Added gap between Edit and Delete buttons
+                    onClick={() => handleDeleteClick(member)}
+                    style={{ ...styles.button, marginLeft: '10px' }}
                   >
                     Delete
                   </Button>
@@ -155,25 +187,19 @@ const MemberList = () => {
                 style={styles.formControl}
               />
             </Form.Group>
-            <Form.Group controlId="formStartDate">
-              <Form.Label>Start Date</Form.Label>
+            <Form.Group controlId="formPaket">
+              <Form.Label>Paket</Form.Label>
               <Form.Control
-                type="date"
-                name="start_date"
-                value={editForm.start_date}
+                as="select"
+                name="paket"
+                value={editForm.paket}
                 onChange={handleEditChange}
                 style={styles.formControl}
-              />
-            </Form.Group>
-            <Form.Group controlId="formEndDate">
-              <Form.Label>End Date</Form.Label>
-              <Form.Control
-                type="date"
-                name="end_date"
-                value={editForm.end_date}
-                onChange={handleEditChange}
-                style={styles.formControl}
-              />
+              >
+                <option value="">Select a package</option>
+                <option value="2 Months Package">2 Months Package</option>
+                <option value="1 Month Package">1 Month Package</option>
+              </Form.Control>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -186,18 +212,47 @@ const MemberList = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete this member?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)} style={styles.button}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDelete} style={styles.button}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Toast Notification */}
+      <Toast
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        style={styles.toast}
+      >
+        <Toast.Body>{toastMessage}</Toast.Body>
+      </Toast>
     </div>
   );
 };
 
 const styles = {
   container: {
-    backgroundColor: '#1c1c28', // Dark background matching the card color
+    backgroundColor: '#1c1c28',
     color: 'white',
-    minHeight: '100vh',  // Full screen
+    minHeight: '100vh',
     fontFamily: 'Roboto, sans-serif',
-    paddingBottom: '30px', // Prevents content from being cut off at the bottom
-    paddingTop: '20px', // Adds top padding for spacing
+    paddingBottom: '30px',
+    paddingTop: '20px',
   },
   title: {
     color: '#3498db',
@@ -229,7 +284,15 @@ const styles = {
   noMembers: {
     color: '#95a5a6',
     textAlign: 'center',
-  }
+  },
+  toast: {
+    position: 'fixed',
+    bottom: '20px',
+    right: '20px',
+    backgroundColor: '#2c3e50',
+    color: 'white',
+    boxShadow: '0px 0px 10px rgba(52, 152, 219, 0.8)',
+  },
 };
 
 export default MemberList;

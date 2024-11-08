@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->date('start_date');
             $table->date('end_date');
+            $table->string('paket'); // Add Paket column here
             $table->timestamps();
         });
     }

@@ -9,11 +9,12 @@ class Member extends Model
 {
     use HasFactory;
 
-    protected $fillable=[
+    protected $fillable = [
         'fullname',
         'nickname',
         'email',
         'start_date',
-        'end_date'
+        'end_date',
+        'paket', 
     ];
 }

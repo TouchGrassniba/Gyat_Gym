@@ -23,6 +23,7 @@ class MemberController extends Controller
             'email' => 'required|email',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
+            'paket' => 'required|string', // Add validation for Paket
         ]);
 
         $member = Member::create($request->all());
@@ -38,6 +39,7 @@ class MemberController extends Controller
             'email' => 'required|email',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
+            'paket' => 'required|string', // Add validation for Paket
         ]);
 
         $member = Member::findOrFail($id);

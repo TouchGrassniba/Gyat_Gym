@@ -1,16 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
   const [nickname, setNickname] = useState('');
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [paket, setPaket] = useState('');  // New paket state
   const [message, setMessage] = useState('');
 
-  const navigate = useNavigate();  // Use useNavigate hook
+  const navigate = useNavigate();
+
+  // Initialize startDate and endDate
+  const calculateDates = (paket) => {
+    const today = new Date();
+    let endDate;
+
+    if (paket === '2 Months Package') {
+      endDate = new Date(today);
+      endDate.setMonth(today.getMonth() + 2); // Add 2 months
+    } else if (paket === '1 Month Package') {
+      endDate = new Date(today);
+      endDate.setMonth(today.getMonth() + 1); // Add 1 month
+    }
+
+    return { startDate: today.toISOString().split('T')[0], endDate: endDate.toISOString().split('T')[0] };
+  };
 
   // Set form fields when member is selected for editing
   useEffect(() => {
@@ -18,26 +33,26 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
       setNickname(memberToEdit.nickname);
       setFullname(memberToEdit.fullname);
       setEmail(memberToEdit.email);
-      setStartDate(memberToEdit.start_date);
-      setEndDate(memberToEdit.end_date);
+      setPaket(memberToEdit.paket);
     } else {
       setNickname('');
       setFullname('');
       setEmail('');
-      setStartDate('');
-      setEndDate('');
+      setPaket('');
     }
   }, [memberToEdit]);
 
-  // Submit the form (add or update member)
+  // Handle form submission (add or update member)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newMember = { nickname, fullname, email, start_date: startDate, end_date: endDate };
+
+    const { startDate, endDate } = calculateDates(paket);  // Automatically set start and end dates
+    const newMember = { nickname, fullname, email, paket, start_date: startDate, end_date: endDate };
 
     try {
       const method = memberToEdit ? 'PUT' : 'POST';
       const url = memberToEdit ? `http://localhost:8000/api/member/${memberToEdit.id}` : 'http://localhost:8000/api/member';
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -50,7 +65,7 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
       if (response.ok) {
         setMessage(data.message);
         fetchMembers();
-        setMemberToEdit(null); // Clear member to edit
+        setMemberToEdit(null);
       } else {
         setMessage(data.message);
       }
@@ -105,35 +120,27 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="formStartDate" style={styles.label}>Start Date</label>
-            <input
-              type="date"
+            <label htmlFor="formPaket" style={styles.label}>Package</label>
+            <select
               className="form-control"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              value={paket}
+              onChange={(e) => setPaket(e.target.value)}
               required
-            />
+            >
+              <option value="">Select Package</option>
+              <option value="2 Months Package">2 Months Package</option>
+              <option value="1 Month Package">1 Months Package</option>
+            </select>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="formEndDate" style={styles.label}>End Date</label>
-            <input
-              type="date"
-              className="form-control"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              required
-            />
-          </div>
-
-          <div style={styles.buttonContainer}> {/* Flexbox layout for buttons */}
+          <div style={styles.buttonContainer}>
             <Button variant="danger" type="submit" className="btn-sm mt-2 p-2 fs-6">
               {memberToEdit ? 'Update' : 'Submit'}
             </Button>
 
             <Button
               variant="primary"
-              className="btn-sm p-2 fs-6"  // Added fs-5 to make the font slightly bigger
+              className="btn-sm p-2 fs-6"
               onClick={() => navigate('/memberlist')}
             >
               View Member List
@@ -154,10 +161,10 @@ const styles = {
     padding: '20px',
     marginTop: '10px',
     marginBottom: '20px',
-    overflow: 'hidden',  // Prevent scrolling here
+    overflow: 'hidden',
   },
   cardBody: {
-    overflow: 'hidden',  // Ensure no scroll in card body
+    overflow: 'hidden',
   },
   title: {
     color: '#3498db',
@@ -173,8 +180,8 @@ const styles = {
     alignItems: 'center',
   },
   body: {
-    overflow: 'hidden',  // Ensures the whole page doesn't scroll
-    height: '100vh',  // Ensures that the body takes up the full viewport height
+    overflow: 'hidden',
+    height: '100vh',
   },
 };
 
