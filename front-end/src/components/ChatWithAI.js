@@ -98,7 +98,7 @@ const AiChat = () => {
                     {isTyping && (
                         <ListGroup.Item style={styles.aiMessage}>
                             <strong>Jimmy: </strong>
-                            {typingMessage || 'Jimmy is typing...'}
+                            {typingMessage || 'Jimmy is thinking...'}
                         </ListGroup.Item>
                     )}
                 </ListGroup>
