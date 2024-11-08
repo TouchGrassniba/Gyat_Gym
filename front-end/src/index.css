@@ -6,6 +6,11 @@
   padding: 0;
   box-sizing: border-box;
 }
+/* In index.css or global stylesheet */
+.no-scroll {
+  overflow: hidden;
+  height: 100vh;  /* Ensure body takes full viewport height */
+}
 
 /* Body styles - ensure no unwanted margins or padding */
 body {

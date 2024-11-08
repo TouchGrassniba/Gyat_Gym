@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate
 
 const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
   const [nickname, setNickname] = useState('');
@@ -8,6 +9,8 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [message, setMessage] = useState('');
+
+  const navigate = useNavigate();  // Use useNavigate hook
 
   // Set form fields when member is selected for editing
   useEffect(() => {
@@ -58,8 +61,8 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
   };
 
   return (
-    <div className="card mt-5" style={styles.card}>
-      <div className="card-body">
+    <div className="card mt-2" style={styles.card}>
+      <div className="card-body" style={styles.cardBody}>
         <h2 className="text-center" style={styles.title}>
           {memberToEdit ? 'Edit Gym Member' : 'Add Gym Member'}
         </h2>
@@ -123,9 +126,19 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
             />
           </div>
 
-          <Button variant="danger" type="submit" style={styles.button}>
-            {memberToEdit ? 'Update' : 'Submit'}
-          </Button>
+          <div style={styles.buttonContainer}> {/* Flexbox layout for buttons */}
+            <Button variant="danger" type="submit" className="btn-sm mt-2 p-2 fs-6">
+              {memberToEdit ? 'Update' : 'Submit'}
+            </Button>
+
+            <Button
+              variant="primary"
+              className="btn-sm p-2 fs-6"  // Added fs-5 to make the font slightly bigger
+              onClick={() => navigate('/memberlist')}
+            >
+              View Member List
+            </Button>
+          </div>
         </form>
       </div>
     </div>
@@ -139,6 +152,12 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 0 10px rgba(52, 152, 219, 0.4)',
     padding: '20px',
+    marginTop: '10px',
+    marginBottom: '20px',
+    overflow: 'hidden',  // Prevent scrolling here
+  },
+  cardBody: {
+    overflow: 'hidden',  // Ensure no scroll in card body
   },
   title: {
     color: '#3498db',
@@ -147,12 +166,15 @@ const styles = {
   label: {
     color: '#95a5a6',
   },
-  button: {
-    backgroundColor: '#e74c3c',
-    borderColor: '#e74c3c',
-    boxShadow: '0 0 10px rgba(231, 76, 60, 0.8)',
-    transition: 'all 0.3s ease',
-    marginTop: '10px',
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+    alignItems: 'center',
+  },
+  body: {
+    overflow: 'hidden',  // Ensures the whole page doesn't scroll
+    height: '100vh',  // Ensures that the body takes up the full viewport height
   },
 };
 

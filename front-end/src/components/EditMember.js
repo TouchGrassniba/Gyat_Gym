@@ -48,7 +48,7 @@ const EditMember = ({ memberToEdit, setMemberToEdit, fetchMembers }) => {
   };
 
   return (
-    <div className="card" style={styles.card}>
+    <div className="card" style={{ ...styles.card, backgroundColor: '#1c1c28' }}>
       <div className="card-body">
         <h2 className="text-center" style={styles.title}>Edit Member</h2>
         <form onSubmit={handleEditSubmit}>
@@ -109,6 +109,24 @@ const EditMember = ({ memberToEdit, setMemberToEdit, fetchMembers }) => {
       </div>
     </div>
   );
+};
+
+const styles = {
+  card: {
+    borderRadius: '10px',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+    marginBottom: '20px',
+  },
+  title: {
+    color: '#fff',
+  },
+  label: {
+    color: '#ccc',
+  },
+  button: {
+    backgroundColor: '#f44336',
+    color: '#fff',
+  },
 };
 
 export default EditMember;

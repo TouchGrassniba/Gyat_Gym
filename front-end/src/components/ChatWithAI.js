@@ -10,6 +10,17 @@ const AiChat = () => {
     const [typingMessage, setTypingMessage] = useState(''); // Temporary typing message
     const [typingInterval, setTypingInterval] = useState(null); // To store the typing interval ID
 
+    // Function to clean up and format the AI response
+    const cleanResponse = (response) => {
+        return response
+            .replace(/#\s*/g, '')         // Remove headers starting with #
+            .replace(/\*\*\s*/g, '')      // Remove bold symbols **
+            .replace(/\*\s*/g, '')        // Remove single * symbols
+            .replace(/\s*:\s*/g, ': ')    // Clean up spacing around colons
+            .replace(/###\s*/g, '')       // Remove ### for sections
+            .replace(/-/g, '•');          // Replace "-" with bullet points if desired
+    };
+
     const typeEffect = (text) => {
         let index = 0;
         setTypingMessage(''); // Ensure typingMessage is cleared at the start
@@ -45,7 +56,8 @@ const AiChat = () => {
         try {
             const res = await axios.post('http://localhost:8000/api/aichat', { message });
             const aiReply = res.data.reply || "I'm sorry, I didn't get that.";
-            typeEffect(aiReply);
+            const cleanedReply = cleanResponse(aiReply); // Clean the AI response
+            typeEffect(cleanedReply);
         } catch (error) {
             console.error('Error communicating with AI:', error);
             setResponses((prevResponses) => [

@@ -7,12 +7,7 @@ function Home() {
     return (
         <div className="container-fluid" style={styles.container}>
             <div className="d-flex justify-content-end mb-4">
-                <Link to="/createmember">
-                    <Button variant="primary" style={styles.button}>Create Member</Button>
-                </Link>
-                <Link to="/aichat">
-                    <Button variant="primary" className="mx-3" style={styles.button}>Chat With AI Coach</Button>
-                </Link>
+              
             </div>
 
             <h2 className="text-center mb-4" style={styles.title}>Exercise List</h2>

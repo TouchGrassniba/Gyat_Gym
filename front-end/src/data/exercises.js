@@ -14,7 +14,7 @@ const exercises = [
         rating: 4.8,
     },
     {
-        image: 'https://png.pngtree.com/png-clipart/20230913/original/pngtree-cardio-clipart-girl-running-on-the-tread-machine-cartoon-vector-png-image_11064612.png',
+        image: 'https://thumbs.dreamstime.com/b/little-kid-wearing-uniform-run-race-248091403.jpg',
         name: 'Running',
         function: 'Heart',
         rating: 4.1,

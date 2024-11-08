@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom'; // Import Link for navigation
+import { useNavigate, } from 'react-router-dom'; // Import Link for navigation
 import AddGym from './AddMember';
 
 const GymMember = () => {
@@ -8,7 +8,7 @@ const GymMember = () => {
   const [memberToEdit, setMemberToEdit] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch all members
+  // Fetch all member
   const fetchMembers = async () => {
     try {
       const response = await fetch('http://localhost:8000/api/member');
@@ -28,7 +28,7 @@ const GymMember = () => {
   }, []);
 
   return (
-    <div
+    <div 
       style={{
         backgroundColor: '#021526',
         padding: '20px',
@@ -36,23 +36,18 @@ const GymMember = () => {
         display: 'flex',     // Use flexbox to ensure it stretches vertically
         flexDirection: 'column', // Align items vertically
         justifyContent: 'flex-start',  // Align content at the top of the container
-        position: 'relative' // Required for absolute positioning of the Home button
+        position: 'relative', // Required for absolute positioning of the Home button
+        overflow:'hidden'
       }}
     >
       {/* Home Button in Top-Right */}
-      <Link to="/" style={{ position: 'absolute', top: '20px', right: '60px' }}>
-        <Button variant="light" className="mr-2">
-          Home
-        </Button>
-      </Link>
+     
   
     
       {console.log(members)}
       <AddGym fetchMembers={fetchMembers} memberToEdit={memberToEdit} setMemberToEdit={setMemberToEdit} />
       
-      <Button style={{ width: '15%' }} variant="primary" className="mt-3" onClick={() => navigate('/memberlist')}>
-        View Member List
-      </Button>
+
     </div>
   );
 };
