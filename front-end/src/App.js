@@ -56,21 +56,21 @@ function AppContent() {
 
 const styles = {
   navbar: {
-    padding: '15px 30px',
+    padding: '10px 20px',  // Reduced padding for smaller navbar
     borderRadius: '10px',
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
   },
   logo: {
-    height: '45px',
-    borderRadius: '10px',
+    height: '35px',  // Reduced logo size
+    borderRadius: '8px',  // Slightly smaller border-radius
   },
   navLink: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: '15px',
+    fontSize: '15px',  // Reduced font size for smaller navbar
     textTransform: 'uppercase',
     letterSpacing: '1px',
-    marginRight: '20px',
+    marginRight: '15px',  // Reduced margin between links
     transition: 'color 0.3s ease',
   },
 };

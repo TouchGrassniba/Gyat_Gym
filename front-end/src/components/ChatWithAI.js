@@ -82,12 +82,10 @@ const AiChat = () => {
     };
 
     return (
-        <Container fluid style={styles.container}>
-            <div style={styles.header}>
+        <Container  fluid style={styles.container}>
+            <div className='mt-5' style={styles.header}>
                 <h2 style={styles.title}>Coach Jimmy</h2>
-                <Link to="/">
-                    <Button variant="outline-light" style={styles.backButton}>Back to Home</Button>
-                </Link>
+              
             </div>
             <div style={styles.chatWindow}>
                 <ListGroup>
