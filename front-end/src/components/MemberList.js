@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ListGroup, Button, Modal, Form, Toast } from 'react-bootstrap';
+import Cookies from 'js-cookie';
 
 const MemberList = () => {
   const [members, setMembers] = useState([]);
@@ -15,10 +16,15 @@ const MemberList = () => {
   });
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
+  const token = Cookies.get('token');  // Retrieve the token from cookies
 
   const fetchMembers = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/member');
+      const response = await fetch('http://localhost:8000/api/member', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       if (response.ok) {
         setMembers(data.data);
@@ -36,6 +42,9 @@ const MemberList = () => {
     try {
       const response = await fetch(`http://localhost:8000/api/member/${memberToDelete.id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
       const data = await response.json();
       if (response.ok) {
@@ -91,6 +100,7 @@ const MemberList = () => {
       const response = await fetch(`http://localhost:8000/api/member/${memberToEdit.id}`, {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -164,7 +174,8 @@ const MemberList = () => {
                 name="nickname"
                 value={editForm.nickname}
                 onChange={handleEditChange}
-                style={styles.formControl}
+                style={
+                  styles.formControl}
               />
             </Form.Group>
             <Form.Group controlId="formFullname">

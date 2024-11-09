@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
   const [nickname, setNickname] = useState('');
@@ -10,6 +11,7 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
   const [message, setMessage] = useState('');
 
   const navigate = useNavigate();
+  const token = Cookies.get('token');  // Retrieve the token from cookies
 
   // Initialize startDate and endDate
   const calculateDates = (paket) => {
@@ -57,6 +59,7 @@ const AddGym = ({ fetchMembers, memberToEdit, setMemberToEdit }) => {
         method,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,  // Add the token to the request
         },
         body: JSON.stringify(newMember),
       });

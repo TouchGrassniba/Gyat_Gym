@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { useNavigate, } from 'react-router-dom'; // Import Link for navigation
+import { useNavigate } from 'react-router-dom';
 import AddGym from './AddMember';
+import Cookies from 'js-cookie';
 
 const GymMember = () => {
   const [members, setMembers] = useState([]);
   const [memberToEdit, setMemberToEdit] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch all member
+  // Fetch all members with Authorization header
   const fetchMembers = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/member');
+      const token = Cookies.get('token');  // Get the token from cookies
+
+      const response = await fetch('http://localhost:8000/api/member', {
+        headers: {
+          'Authorization': `Bearer ${token}`,  // Add the token to the Authorization header
+        },
+      });
+
       const data = await response.json();
       if (response.ok) {
         setMembers(data.data);
@@ -40,14 +48,8 @@ const GymMember = () => {
         overflow:'hidden'
       }}
     >
-      {/* Home Button in Top-Right */}
-     
-  
-    
       {console.log(members)}
       <AddGym fetchMembers={fetchMembers} memberToEdit={memberToEdit} setMemberToEdit={setMemberToEdit} />
-      
-
     </div>
   );
 };

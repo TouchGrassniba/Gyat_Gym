@@ -3,23 +3,29 @@
 use App\Http\Controllers\MemberController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Log;
 
-// Secure route for authenticated user information
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// Register and login routes
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+// Secure route for authenticated user information using JWT
+Route::middleware('jwt.auth')->get('/user', function (Request $request) {
+    // Log the incoming token (optional, for debugging purposes)
+    Log::info('Token:', [$request->header('Authorization')]);
+
+    return $request->user(); // Return authenticated user
+});
 
 // Routes for managing gym members
-Route::get('/member', [MemberController::class, 'index']);
-Route::post('/member', [MemberController::class, 'store']);
-Route::put('/member/{id}', [MemberController::class, 'update']);
-Route::delete('/member/{id}', [MemberController::class, 'destroy']);
+Route::middleware('jwt.auth')->get('/member', [MemberController::class, 'index']);
+Route::middleware('jwt.auth')->post('/member', [MemberController::class, 'store']);
+Route::middleware('jwt.auth')->put('/member/{id}', [MemberController::class, 'update']);
+Route::middleware('jwt.auth')->delete('/member/{id}', [MemberController::class, 'destroy']);
 
 // AI Chat Route using ChatGPT (OpenAI API)
-// AI Chat Route (Hugging Face API)
-Route::post('/aichat', function (Request $request) {
+Route::middleware('jwt.auth')->post('/aichat', function (Request $request) {
     $message = $request->input('message');
     $apiKey = env('AI21_API_KEY'); // Use AI21 API Key from .env
 
