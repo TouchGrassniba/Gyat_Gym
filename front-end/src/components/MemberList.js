@@ -215,12 +215,13 @@ const MemberList = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
+        <Button variant="primary" onClick={handleEditSubmit} style={styles.button}>
+            Save Changes
+          </Button>
           <Button variant="secondary" onClick={() => setShowEditModal(false)} style={styles.button}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleEditSubmit} style={styles.button}>
-            Save Changes
-          </Button>
+         
         </Modal.Footer>
       </Modal>
 
@@ -233,12 +234,13 @@ const MemberList = () => {
           Are you sure you want to delete this member?
         </Modal.Body>
         <Modal.Footer>
+        <Button variant="danger" onClick={handleDelete} style={styles.button}>
+            Delete
+          </Button>
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)} style={styles.button}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={handleDelete} style={styles.button}>
-            Delete
-          </Button>
+          
         </Modal.Footer>
       </Modal>
 
