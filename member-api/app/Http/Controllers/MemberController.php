@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 class MemberController extends Controller
 {
+
+   
     // Get all members
     public function index()
     {
