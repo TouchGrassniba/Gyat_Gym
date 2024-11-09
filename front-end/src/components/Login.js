@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Button, Form, Container, Alert, Card } from 'react-bootstrap';
 import Cookies from 'js-cookie';  // Import js-cookie
+import { useNavigate } from 'react-router-dom';  // Import useNavigate for navigation
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();  // Initialize useNavigate hook
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +26,9 @@ const Login = () => {
       Cookies.set('token', response.data.token, { expires: 7 }); // expires in 7 days
 
       setLoading(false);
+
+      // Redirect to the /createmember route after successful login
+      navigate('/createmember');
     } catch (err) {
       setLoading(false);
       if (err.response) {
