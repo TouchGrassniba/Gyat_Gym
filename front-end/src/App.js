@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import GymMember from './components/GymMember';
 import MemberList from './components/MemberList';
@@ -9,6 +9,7 @@ import Exercise from './components/Exercise';
 import Login from './components/Login';
 import Register from './components/Register';
 import PrivateRoute from './components/PrivateRoute';  // Import PrivateRoute
+import Cookies from 'js-cookie';  // Import js-cookie for cookie management
 
 function App() {
   return (
@@ -21,7 +22,14 @@ function App() {
 function AppContent() {
   const location = useLocation();
   const isCreateMemberRoute = location.pathname === '/createmember';
-  const isAuthenticated = localStorage.getItem('token');  // Check if the user is authenticated
+  const isAuthenticated = Cookies.get('token');  // Check if the user is authenticated using the token from cookies
+  const navigate = useNavigate();  // Hook to navigate to another page
+
+  // Logout function
+  const handleLogout = () => {
+    Cookies.remove('token');  // Remove the token from cookies
+    navigate('/login');  // Redirect the user to the login page after logout
+  };
 
   return (
     <div className={`App ${isCreateMemberRoute ? 'no-scroll' : ''}`}>
@@ -43,7 +51,7 @@ function AppContent() {
               <Nav.Link as={Link} to="/createmember" style={styles.navLink}>Create Member</Nav.Link>
               <Nav.Link as={Link} to="/memberlist" style={styles.navLink}>Member List</Nav.Link>
               {isAuthenticated ? (
-                <Nav.Link as={Link} to="/login" style={styles.navLink}>Logout</Nav.Link>
+                <Nav.Link as="button" onClick={handleLogout} style={styles.navLink}>Logout</Nav.Link>
               ) : (
                 <>
                   <Nav.Link as={Link} to="/login" style={styles.navLink}>Login</Nav.Link>
